@@ -1,22 +1,21 @@
 package main
 
 import (
-	"net/http"
-	"fmt"
-	"strconv"
-	"io/ioutil"
-	"regexp"
-	"math/rand"
-	"encoding/json"
-	"time"
-	"encoding/hex"
-	"log"
-	"github.com/bitly/go-simplejson"
 	"bytes"
+	"encoding/hex"
+	"encoding/json"
 	"flag"
-	"os"
+	"fmt"
+	"github.com/bitly/go-simplejson"
 	"github.com/gorilla/websocket"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"net/http"
 	"net/url"
+	"os"
+	"strconv"
+	"time"
 )
 
 var (
@@ -24,7 +23,7 @@ var (
 	roomId     int    = 0
 	id         int    = 0
 	chatHost   string = "livecmt-1.bilibili.com"
-	serverAddr        = "broadcastlv.chat.bilibili.com:2244"
+	serverAddr        = "broadcastlv.chat.bilibili.com:2245"
 )
 
 type Client struct {
@@ -67,21 +66,11 @@ func getChatHost() {
 		fmt.Println("获取ROOMID错误")
 		os.Exit(1)
 	}
-	resp, err = http.Get(cidInfoUrl + strconv.Itoa(roomId))
-	if err != nil {
-		fmt.Println("chatHost获取错误")
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
-	body, _ = ioutil.ReadAll(resp.Body)
-
-	reg := regexp.MustCompile(`<server>(.+?)</server>`)
-	chatHost = reg.FindStringSubmatch(string(body))[1]
 }
 
 func (c *Client) connect() (err error) {
 
-	u := url.URL{Scheme: "ws", Host: serverAddr, Path: "/sub"}
+	u := url.URL{Scheme: "wss", Host: serverAddr, Path: "/sub"}
 	var dialer *websocket.Dialer
 	c.Conn, _, err = dialer.Dial(u.String(), nil)
 	if err!=nil {
